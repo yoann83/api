@@ -8,6 +8,48 @@
     <title>api</title>
 </head>
 <body>
+    <script>
+        const $postList = document.getElementById('postsList');
 
+        function updateView(){
+            fetch("https://graph.instagram.com/me/media?fields=caption,media_url&access_token=IGQVJXX2J0aHpDV1YtZA2FXQjVzZAXZAhZAVItb3hSbEEyVjg4ekcwV3YxU0piQ295Tk9xRTFnVWN1SDYtd19fNmdyamJjaWVOb0QyNDFoMlNaMXdIM200VlV3N0VGSHh1LUV0QWJCaDVR", {
+                "method": "GET"
+            })
+                .then(res => res.json())
+                .then(data => readData(data))
+                .catch(err => handleError(err));
+        }
+
+        function handleError(err){
+            console.error(err);
+        }
+
+        function readData(data){
+            let html = "";
+            const mp4 = '.mp4';
+            data.data.forEach(element => {
+                if (element.media_url.indexOf(mp4) !== -1){
+                    return html +=`
+            <div class="post">
+                <video controls width="250">
+                    <source src="${element.media_url}">
+                </video>
+                <p>${element.caption ? element.caption : ''} </p>
+            </div>
+            `;
+                }
+                return html +=`
+        <div class="post">
+            <img src="${element.media_url}" alt="image">
+            <p>${element.caption ? element.caption : ''} </p>
+        </div>
+        `;
+            });
+            $postList.innerHTML = html;
+        }
+
+        updateView();
+</script>
+    <div id="postsList"></div>
 </body>
 </html>
